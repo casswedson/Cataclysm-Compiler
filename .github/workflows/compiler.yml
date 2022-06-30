@@ -21,12 +21,10 @@ jobs:
           repository: CleverRaven/Cataclysm-DDA
           fetch-depth: 1
           ref: master
-      - name: Install dependencies
-        uses: awalsh128/cache-apt-pkgs-action@v1
-        with:
-          packages: libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev clang
+      - run: |
+          sudo apt-get install libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev clang
       - name: Build
-        run: make -j 4 ASTYLE=0 CCACHE=0 CLANG=1 LINTJSON=0 LOCALIZE=0 LOT=0 PCH=0 RELEASE=1 RUNTESTS=0 TILES=1
+        run: make -j 10 ASTYLE=0 CCACHE=0 CLANG=1 LINTJSON=0 LOCALIZE=0 LOT=0 PCH=0 RELEASE=1 RUNTESTS=0 TILES=1
       - name: Package & post
         run: |
           zip cataclysm-tiles.zip cataclysm-tiles
