@@ -1,0 +1,38 @@
+# References: https://github.com/CleverRaven/Cataclysm-DDA/blob/master/.github/workflows/matrix.yml
+name: Cataclysm Compiler
+
+on:
+  push:
+    branches: [ "main" ]
+
+concurrency:
+  group: cataclysm-build
+  cancel-in-progress: true
+
+jobs:
+  linux-compiler:
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      # - uses: actions/checkout@v3
+      - name: Clone CDDA
+        uses: actions/checkout@v3
+        with:
+          repository: CleverRaven/Cataclysm-DDA
+          fetch-depth: 1
+          ref: master
+      - name: Install dependencies
+        uses: awalsh128/cache-apt-pkgs-action@v1
+        with:
+          packages: libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libsdl2-mixer-dev clang
+      - name: Build
+        run: make -j 4 ASTYLE=0 CCACHE=0 CLANG=1 LINTJSON=0 LOCALIZE=0 LOT=0 PCH=0 RELEASE=1 RUNTESTS=0 TILES=1
+      - name: Package & post
+        run: |
+          zip cataclysm-tiles.zip cataclysm-tiles
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: cataclysm-tiles-binary
+          path: ./cataclysm-tiles.zip
